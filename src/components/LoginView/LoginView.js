@@ -58,6 +58,7 @@ export const LoginView = ({ onLoggedIn }) => {
           required
         />
       </label>
+      <br />
       <button type='submit' onClick={loginHandler}>
         Submit
       </button>

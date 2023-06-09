@@ -1,14 +1,17 @@
+import React from 'react'
+import { Card } from 'react-bootstrap'
+
 export const MovieCard = ({ movie, onMovieClick }) => {
   return (
-    <div
-      style={{
-        fontSize: '20px',
-      }}
+    <Card
+      className='movie-card'
       onClick={() => {
         onMovieClick(movie)
       }}
     >
-      {movie.Title}
-    </div>
+      <Card.Body>
+        <Card.Title>{movie.Title}</Card.Title>
+      </Card.Body>
+    </Card>
   )
 }

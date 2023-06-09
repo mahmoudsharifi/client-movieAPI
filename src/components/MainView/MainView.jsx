@@ -3,6 +3,7 @@ import { MovieCard } from '../MovieCard/MovieCard'
 import { MovieView } from '../MovieView/MovieView'
 import { LoginView } from '../LoginView/LoginView'
 import SignupView from '../SignupView/SignupView'
+import { Button } from 'react-bootstrap'
 
 export const MainView = () => {
   // movies data array
@@ -90,7 +91,7 @@ export const MainView = () => {
         />
       ))}
 
-      <button onClick={handleLogout}>Logout</button>
+      <Button onClick={handleLogout}>Logout</Button>
     </div>
   )
 }

@@ -1,11 +1,7 @@
 import { MainView } from './components/MainView/MainView'
 
 function App() {
-  return (
-    <div>
-      <MainView />
-    </div>
-  )
+  return <MainView />
 }
 
 export default App

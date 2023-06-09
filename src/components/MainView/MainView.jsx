@@ -4,6 +4,7 @@ import { MovieView } from '../MovieView/MovieView'
 import { LoginView } from '../LoginView/LoginView'
 import SignupView from '../SignupView/SignupView'
 import { Button } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
 
 export const MainView = () => {
   // movies data array
@@ -80,18 +81,24 @@ export const MainView = () => {
   }
 
   return (
-    <div>
-      {movies.map((movie) => (
-        <MovieCard
-          key={movie.id}
-          movie={movie}
-          onMovieClick={(newSelectedMovie) => {
-            setSelectedMovie(newSelectedMovie)
-          }}
-        />
-      ))}
-
-      <Button onClick={handleLogout}>Logout</Button>
-    </div>
+    <Container>
+      <Row>
+        {movies.map((movie) => (
+          <Col sm={6} md={4} lg={3} key={movie.id}>
+            <MovieCard
+              movie={movie}
+              onMovieClick={(newSelectedMovie) => {
+                setSelectedMovie(newSelectedMovie)
+              }}
+            />
+          </Col>
+        ))}
+      </Row>
+      <Row>
+        <Col>
+          <Button onClick={handleLogout}>Logout</Button>
+        </Col>
+      </Row>
+    </Container>
   )
 }

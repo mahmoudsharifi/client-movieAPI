@@ -97,7 +97,7 @@ export const MainView = () => {
         setUser(updatedUser)
       })
       .catch((error) => {
-        console.log('Error updating user information:', error)
+        console.log('Error updating user information: ', error)
       })
   }
 

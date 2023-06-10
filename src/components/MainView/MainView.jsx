@@ -33,7 +33,7 @@ export const MainView = () => {
   useEffect(() => {
     if (!token) return
     console.log(token)
-    fetch('http://localhost:8080/movies', {
+    fetch('https://movies-api-sharifi.herokuapp.com/movies', {
       headers: { Authorization: `Bearer ${token}` },
     }).then((response) =>
       response
@@ -44,7 +44,7 @@ export const MainView = () => {
             id: m.Title,
             Title: m.Title,
             Description: m.Description,
-            Genre: m.Genre.Name,
+            Genre: m.Genres.Name,
             Director: m.Director.Name,
             ImageURL: m.ImageURL,
             Year: m.Year,

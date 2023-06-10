@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react'
+import { Navigate, useParams } from 'react-router-dom'
 import { MovieCard } from '../MovieCard/MovieCard'
 import { MovieView } from '../MovieView/MovieView'
 import { LoginView } from '../LoginView/LoginView'
 import SignupView from '../SignupView/SignupView'
+import { NavigationBar } from '../NavigationBar/NavigationBar'
+import { ProfileView } from '../ProfileView/ProfileView'
 import { Button } from 'react-bootstrap'
 import { Container, Row, Col } from 'react-bootstrap'
+import { BrowserRouter } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export const MainView = () => {
   // movies data array
   const storedUser = JSON.parse(localStorage.getItem('user'))
   const storedToken = localStorage.getItem('token')
+  const [loading, setLoading] = useState(false)
   const [movies, setMovies] = useState([])
   const [user, setUser] = useState(storedUser)
   const [token, setToken] = useState(storedToken)
@@ -26,14 +33,15 @@ export const MainView = () => {
     setUser(null)
     setToken(null)
     localStorage.clear()
+    // navigate('/');
   }
 
   // API Call
-  // API Call
   useEffect(() => {
-    if (!token) return
     console.log(token)
-    fetch('http://localhost:8080/movies', {
+    if (!token) return
+    setLoading(true)
+    fetch('https://movies-api-sharifi.herokuapp.com/movies', {
       headers: { Authorization: `Bearer ${token}` },
     }).then((response) =>
       response
@@ -41,68 +49,161 @@ export const MainView = () => {
         .then((data) => {
           console.log(data)
           const movies = data.map((m) => ({
-            id: m.Title,
+            id: m._id,
             Title: m.Title,
             Description: m.Description,
-            Genre: m.Genre.Name,
-            Director: m.Director.Name,
-            ImageURL: m.ImageURL,
+            Genre: m.Genres.Name,
+            Director: m.Director.firstName + ' ' + m.Director.lastName,
+            ImagePath: m.ImagePath,
             Year: m.Year,
           }))
 
           setMovies(movies)
+          console.log(movies)
+          setLoading(false)
         })
         .catch((err) => console.log(err))
     )
-  }, [])
+  }, [user, token])
 
-  const [selectedMovie, setSelectedMovie] = useState(null)
+  const handleAddToFavorites = (movieId) => {
+    // Create an updated user object with the new movie added to the favorite movies array
+    const updatedUser = {
+      ...user,
+      FavoriteMovies: [...user.FavoriteMovies, movieId],
+    }
 
-  if (!user)
-    return (
-      <>
-        <LoginView onLoggedIn={handleLogin} />
-        or
-        <SignupView />
-      </>
-    )
+    console.log(updatedUser, movieId)
 
-  if (selectedMovie) {
-    return (
-      <MovieView
-        movie={selectedMovie}
-        onBackClick={() => setSelectedMovie(null)}
-      />
-    )
+    // Make a PUT request to add the movie to the user's favorite movies
+    fetch(`http://localhost:8080/users/${user.Username}/movies/${movieId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          alert('Added to Favourites')
+          return response.json()
+        } else {
+          throw new Error('Error adding movie to favorites')
+        }
+      })
+      .then((updatedUser) => {
+        // Update the user information state variables if needed
+        console.log('User information updated:', updatedUser)
+        setUser(updatedUser)
+      })
+      .catch((error) => {
+        console.log('Error updating user information:', error)
+      })
   }
 
-  if (movies.length === 0) {
+  const handleRemoveFavorite = (movieId) => {
+    // Make a DELETE request to remove the specified movie from the user's favorite movies
+    fetch(
+      `https://movies-api-sharifi.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((response) => {
+        if (response.status === 200) {
+          // Update the user state by removing the movie from the favorite movies array
+          setUser((prevUser) => ({
+            ...prevUser,
+            FavoriteMovies: prevUser.FavoriteMovies.filter(
+              (id) => id !== movieId
+            ),
+          }))
+          console.log('Movie removed from favorites.')
+          alert('Removed From Favoruites')
+        } else {
+          console.log('Error removing movie from favorites.')
+        }
+      })
+      .catch((error) => {
+        console.log('Error removing movie from favorites:', error)
+      })
+  }
+
+  if (loading) {
     return (
       <div>
-        <p>There are no movies available.</p>
+        <p>Loading.......</p>
       </div>
     )
   }
 
   return (
-    <Container>
-      <Row>
-        {movies.map((movie) => (
-          <Col sm={6} md={4} lg={3} key={movie.id}>
-            <MovieCard
-              movie={movie}
-              onMovieClick={(newSelectedMovie) => {
-                setSelectedMovie(newSelectedMovie)
-              }}
+    <>
+      <BrowserRouter>
+        <NavigationBar user={storedUser} onLogout={handleLogout} />
+        <div
+          style={{
+            margin: '20px 60px',
+          }}
+        >
+          <Routes>
+            <Route
+              path='/'
+              element={
+                user ? (
+                  <Row>
+                    {movies.map((movie) => (
+                      <Col sm={6} md={4} lg={3} key={movie.id}>
+                        <MovieCard
+                          movie={movie}
+                          handleAddToFavorites={handleAddToFavorites}
+                          onRemoveFavorite={handleRemoveFavorite}
+                        />
+                      </Col>
+                    ))}
+                  </Row>
+                ) : (
+                  <Navigate to='/login' />
+                )
+              }
             />
-          </Col>
-        ))}
-      </Row>
-      <Row>
-        <Col>
-          <Button onClick={handleLogout}>Logout</Button>
-        </Col>
-      </Row>
-    </Container>
+            <Route
+              path='/movie/:id'
+              element={
+                <MovieView
+                  movies={movies}
+                  onAddToFavorites={handleAddToFavorites}
+                />
+              }
+            />
+
+            <Route
+              path='/login'
+              element={<LoginView onLoggedIn={handleLogin} />}
+            />
+
+            <Route path='/signup' element={<SignupView />} />
+
+            <Route
+              path='/profile'
+              element={
+                <ProfileView
+                  user={user}
+                  token={token}
+                  movies={movies}
+                  onLogout={handleLogout}
+                  onRemoveFavorite={handleRemoveFavorite}
+                />
+              }
+            />
+
+            <Route path='*' element={<h1>Not Found</h1>} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </>
   )
 }

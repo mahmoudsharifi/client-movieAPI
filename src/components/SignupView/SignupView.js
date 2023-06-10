@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
-import { Form, Button } from 'react-bootstrap'
+import { Form, Button, Card } from 'react-bootstrap'
+import { useNavigate } from 'react-router'
+
 const SignupView = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
   const [age, setAge] = useState('')
+  const navigate = useNavigate()
 
   const signupHandler = (e) => {
     e.preventDefault()
@@ -17,7 +20,7 @@ const SignupView = () => {
     }
 
     // make request to api
-    fetch('http://localhost:8080/users', {
+    fetch('https://movies-api-sharifi.herokuapp.com/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,6 +31,7 @@ const SignupView = () => {
         if (response.ok) {
           console.log(data)
           alert('You have successfully registered. Please login.')
+          navigate('/login')
         } else {
           console.log(data)
           if (data.errors) {
@@ -39,8 +43,20 @@ const SignupView = () => {
   }
 
   return (
-    <div>
-      <h1>Signup</h1>
+    <Card
+      style={{
+        width: '40%',
+        margin: '0 auto',
+        padding: '20px 40px',
+      }}
+    >
+      <h3
+        style={{
+          textAlign: 'center',
+        }}
+      >
+        Sign up
+      </h3>
       <Form>
         <Form.Group controlId='formUsername'>
           <Form.Label>Username:</Form.Label>
@@ -77,11 +93,19 @@ const SignupView = () => {
           />
         </Form.Group>
 
-        <Button variant='primary' type='submit' onClick={signupHandler}>
-          Submit
+        <br />
+        <Button
+          variant='primary'
+          type='submit'
+          style={{
+            width: '100%',
+          }}
+          onClick={signupHandler}
+        >
+          Signup
         </Button>
       </Form>
-    </div>
+    </Card>
   )
 }
 

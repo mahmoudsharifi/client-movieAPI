@@ -76,13 +76,16 @@ export const MainView = () => {
     console.log(updatedUser, movieId)
 
     // Make a PUT request to add the movie to the user's favorite movies
-    fetch(`http://localhost:8080/users/${user.Username}/movies/${movieId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    fetch(
+      `https://movies-api-sharifi.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
       .then((response) => {
         if (response.status === 200) {
           alert('Added to Favourites')
@@ -97,7 +100,7 @@ export const MainView = () => {
         setUser(updatedUser)
       })
       .catch((error) => {
-        console.log('Error updating user information: ', error)
+        console.log('Error updating user information:   ', error)
       })
   }
 

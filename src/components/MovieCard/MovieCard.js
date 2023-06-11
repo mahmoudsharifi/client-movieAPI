@@ -8,13 +8,45 @@ export const MovieCard = ({ movie, handleAddToFavorites }) => {
   return (
     <Card className='movie-card'>
       <Card.Body>
-        <Row>
+        <Row
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
           <Col sm={24} md={8} lg={8}>
-            <Card.Title>{movie.Title}</Card.Title>
+            <img
+              src={movie.ImagePath}
+              className='movie-card-image'
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+          </Col>
+          <Col sm={24} md={8} lg={8}>
+            <Card.Title
+              style={{
+                textAlign: 'center',
+                color: 'blue',
+                marginTop: '1rem',
+                fontSize: '1.5rem',
+              }}
+            >
+              {movie.Title}
+            </Card.Title>
           </Col>
           <Col sm={24} md={8} lg={8}>
             <Button
               variant='secondary'
+              style={{
+                width: '100%',
+                backgroundColor: '#f5c518',
+                border: 'none',
+              }}
               onClick={() => {
                 handleAddToFavorites(movie.id)
               }}
@@ -26,6 +58,11 @@ export const MovieCard = ({ movie, handleAddToFavorites }) => {
           <Col sm={24} md={8} lg={8}>
             <Button
               variant='secondary'
+              style={{
+                width: '100%',
+                backgroundColor: '#2d2d2d',
+                border: 'none',
+              }}
               onClick={() => {
                 navigate(`/movie/${movie.id}`)
               }}

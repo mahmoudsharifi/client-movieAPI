@@ -88,7 +88,7 @@ export const MainView = () => {
     )
       .then((response) => {
         if (response.status === 200) {
-          alert('Added to Favourites')
+          alert('Added to Favourite')
           return response.json()
         } else {
           throw new Error('Error adding movie to favorites')
